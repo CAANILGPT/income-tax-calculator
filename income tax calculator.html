@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANIL & COMPANY, Income Tax Calculator FY 2024-25 (AY 2025-26)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-4 text-center">ANIL & COMPANY,Income Tax Calculator FY 2024-25 (AY 2025-26)</h1>
+        <form id="taxForm" class="space-y-4">
+            <div>
+                <h2 class="text-lg font-semibold">Personal Details</h2>
+                <label class="block">Age Group:</label>
+                <select id="ageGroup" class="border p-2 w-full rounded">
+                    <option value="below60">Below 60 years</option>
+                    <option value="60to80">60 to 80 years (Senior Citizen)</option>
+                    <option value="above80">Above 80 years (Super Senior Citizen)</option>
+                </select>
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold">Income Details</h2>
+                <label class="block">Salary Income (₹, before standard deduction):</label>
+                <input type="number" id="salaryIncome" class="border p-2 w-full rounded" min="0" value="0">
+                <h3 class="text-md font-semibold mt-4">House Property Income</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block">Self-Occupied Property - Annual Value (₹, usually 0):</label>
+                        <input type="number" id="selfOccupiedNAV" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Self-Occupied Property - Home Loan Interest (₹, max ₹2,00,000 in Old Regime):</label>
+                        <input type="number" id="selfOccupiedInterest" class="border p-2 w-full rounded" min="0" value="0">
+                    </div>
+                    <div>
+                        <label class="block">Let-Out Property - Gross Annual Value (₹):</label>
+                        <input type="number" id="letOutGAV" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Let-Out Property - Municipal Taxes Paid (₹):</label>
+                        <input type="number" id="letOutTaxes" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Let-Out Property - Home Loan Interest (₹):</label>
+                        <input type="number" id="letOutInterest" class="border p-2 w-full rounded" min="0" value="0">
+                    </div>
+                </div>
+                <h3 class="text-md font-semibold mt-4">Capital Gains</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block">Equity Shares - Purchase Value (₹):</label>
+                        <input type="number" id="equityPurchaseValue" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Equity Shares - Sale Value (₹):</label>
+                        <input type="number" id="equitySaleValue" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Purchase Date (Equity):</label>
+                        <input type="date" id="equityPurchaseDate" class="border p-2 w-full rounded">
+                        <label class="block">Sale Date (Equity):</label>
+                        <input type="date" id="equitySaleDate" class="border p-2 w-full rounded">
+                    </div>
+                    <div>
+                        <label class="block">Property - Purchase Value (₹):</label>
+                        <input type="number" id="propertyPurchaseValue" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Property - Sale Value (₹):</label>
+                        <input type="number" id="propertySaleValue" class="border p-2 w-full rounded" min="0" value="0">
+                        <label class="block">Purchase Date (Property):</label>
+                        <input type="date" id="propertyPurchaseDate" class="border p-2 w-full rounded">
+                        <label class="block">Sale Date (Property):</label>
+                        <input type="date" id="propertySaleDate" class="border p-2 w-full rounded">
+                    </div>
+                </div>
+                <label class="block">Business/Profession Income (₹):</label>
+                <input type="number" id="businessIncome" class="border p-2 w-full rounded" min="0" value="0">
+                <label class="block">Other Sources Income (e.g., Interest, Dividends) (₹):</label>
+                <input type="number" id="otherIncome" class="border p-2 w-full rounded" min="0" value="0">
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold">Deductions (Old Regime)</h2>
+                <label class="block">Section 80C (e.g., PPF, ELSS) (₹, max ₹1,50,000):</label>
+                <input type="number" id="section80C" class="border p-2 w-full rounded" min="0" max="150000" value="0">
+                <label class="block">Section 80D (Health Insurance) (₹, max ₹25,000 or ₹50,000 for senior citizens):</label>
+                <input type="number" id="section80D" class="border p-2 w-full rounded" min="0" value="0">
+                <label class="block">Section 80TTA/80TTB (Interest on Savings/FD) (₹, max ₹10,000 or ₹50,000 for senior citizens):</label>
+                <input type="number" id="section80TT" class="border p-2 w-full rounded" min="0" value="0">
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold">Deductions (Both Regimes)</h2>
+                <label class="block">Section 80CCD(2) (Employer’s NPS Contribution) (₹):</label>
+                <input type="number" id="section80CCD2" class="border p-2 w-full rounded" min="0" value="0">
+            </div>
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Calculate Tax</button>
+        </form>
+        <div id="error" class="error hidden"></div>
+        <div id="result" class="mt-4 hidden">
+            <h2 class="text-lg font-semibold">Tax Calculation Results</h2>
+            <div id="oldRegime" class="mt-2"></div>
+            <div id="newRegime" class="mt-2"></div>
+            <div id="recommendation" class="mt-2 font-bold"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('taxForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            calculateTax();
+        });
+
+        function calculateTax() {
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+            errorDiv.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+
+            // Input validation
+            const inputs = [
+                'salaryIncome', 'selfOccupiedNAV', 'selfOccupiedInterest', 'letOutGAV', 
+                'letOutTaxes', 'letOutInterest', 'equityPurchaseValue', 'equitySaleValue', 
+                'propertyPurchaseValue', 'propertySaleValue', 'businessIncome', 'otherIncome', 
+                'section80C', 'section80D', 'section80TT', 'section80CCD2'
+            ];
+            for (let id of inputs) {
+                const value = parseFloat(document.getElementById(id).value);
+                if (isNaN(value) || value < 0) {
+                    errorDiv.textContent = `Please enter valid non-negative numbers for ${id.replace(/([A-Z])/g, ' $1').toLowerCase()}.`;
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // Validate dates
+            const equityPurchaseDate = document.getElementById('equityPurchaseDate').value;
+            const equitySaleDate = document.getElementById('equitySaleDate').value;
+            const propertyPurchaseDate = document.getElementById('propertyPurchaseDate').value;
+            const propertySaleDate = document.getElementById('propertySaleDate').value;
+            if ((equityPurchaseDate && !equitySaleDate) || (!equityPurchaseDate && equitySaleDate) || 
+                (propertyPurchaseDate && !propertySaleDate) || (!propertyPurchaseDate && propertySaleDate)) {
+                errorDiv.textContent = 'Please provide both purchase and sale dates for equity shares and property if values are entered.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            if (equityPurchaseDate && equitySaleDate && new Date(equitySaleDate) <= new Date(equityPurchaseDate)) {
+                errorDiv.textContent = 'Equity sale date must be after purchase date.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            if (propertyPurchaseDate && propertySaleDate && new Date(propertySaleDate) <= new Date(propertyPurchaseDate)) {
+                errorDiv.textContent = 'Property sale date must be after purchase date.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Get inputs
+            const ageGroup = document.getElementById('ageGroup').value;
+            const salaryIncome = parseFloat(document.getElementById('salaryIncome').value) || 0;
+            const selfOccupiedNAV = parseFloat(document.getElementById('selfOccupiedNAV').value) || 0;
+            const selfOccupiedInterest = parseFloat(document.getElementById('selfOccupiedInterest').value) || 0;
+            const letOutGAV = parseFloat(document.getElementById('letOutGAV').value) || 0;
+            const letOutTaxes = parseFloat(document.getElementById('letOutTaxes').value) || 0;
+            const letOutInterest = parseFloat(document.getElementById('letOutInterest').value) || 0;
+            const equityPurchaseValue = parseFloat(document.getElementById('equityPurchaseValue').value) || 0;
+            const equitySaleValue = parseFloat(document.getElementById('equitySaleValue').value) || 0;
+            const propertyPurchaseValue = parseFloat(document.getElementById('propertyPurchaseValue').value) || 0;
+            const propertySaleValue = parseFloat(document.getElementById('propertySaleValue').value) || 0;
+            const businessIncome = parseFloat(document.getElementById('businessIncome').value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+            const section80C = parseFloat(document.getElementById('section80C').value) || 0;
+            const section80D = parseFloat(document.getElementById('section80D').value) || 0;
+            const section80TT = parseFloat(document.getElementById('section80TT').value) || 0;
+            const section80CCD2 = parseFloat(document.getElementById('section80CCD2').value) || 0;
+
+            // Validate deduction limits
+            if (section80C > 150000) {
+                errorDiv.textContent = 'Section 80C deduction cannot exceed ₹1,50,000.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            const max80D = ageGroup === '60to80' || ageGroup === 'above80' ? 50000 : 25000;
+            if (section80D > max80D) {
+                errorDiv.textContent = `Section 80D deduction cannot exceed ₹${max80D}.`;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            const max80TT = ageGroup === '60to80' || ageGroup === 'above80' ? 50000 : 10000;
+            if (section80TT > max80TT) {
+                errorDiv.textContent = `Section 80TTA/80TTB deduction cannot exceed ₹${max80TT}.`;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            if (selfOccupiedInterest > 200000) {
+                errorDiv.textContent = 'Self-occupied property interest deduction cannot exceed ₹2,00,000 in Old Regime.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Calculate capital gains
+            const equityGains = Math.max(0, equitySaleValue - equityPurchaseValue);
+            const propertyGains = Math.max(0, propertySaleValue - propertyPurchaseValue);
+            let equitySTCG = 0, equityLTCG = 0, propertySTCG = 0, propertyLTCG = 0;
+            const cutoffDate = new Date('2024-07-23');
+            if (equityPurchaseDate && equitySaleDate && equityGains > 0) {
+                const purchase = new Date(equityPurchaseDate);
+                const sale = new Date(equitySaleDate);
+                const months = (sale.getFullYear() - purchase.getFullYear()) * 12 + sale.getMonth() - purchase.getMonth();
+                if (months > 12) {
+                    equityLTCG = equityGains;
+                } else {
+                    equitySTCG = equityGains;
+                }
+            }
+            if (propertyPurchaseDate && propertySaleDate && propertyGains > 0) {
+                const purchase = new Date(propertyPurchaseDate);
+                const sale = new Date(propertySaleDate);
+                const months = (sale.getFullYear() - purchase.getFullYear()) * 12 + sale.getMonth() - purchase.getMonth();
+                if (months > 24) {
+                    propertyLTCG = propertyGains;
+                } else {
+                    propertySTCG = propertyGains;
+                }
+            }
+
+            // House Property: Self-Occupied
+            const selfOccupiedTaxableOld = selfOccupiedNAV - Math.min(selfOccupiedInterest, 200000);
+            const selfOccupiedTaxableNew = selfOccupiedNAV; // No interest deduction in New Regime
+            const selfOccupiedFinalOld = selfOccupiedTaxableOld < -200000 ? -200000 : selfOccupiedTaxableOld;
+            const selfOccupiedFinalNew = selfOccupiedTaxableNew < 0 ? 0 : selfOccupiedTaxableNew;
+
+            // House Property: Let-Out
+            const letOutNAV = letOutGAV - letOutTaxes;
+            const letOutStandardDeduction = letOutNAV * 0.30;
+            const letOutTaxableOld = letOutNAV - letOutStandardDeduction - letOutInterest;
+            const letOutTaxableNew = letOutNAV - letOutStandardDeduction - Math.min(letOutInterest, letOutNAV - letOutStandardDeduction);
+            const letOutFinalOld = letOutTaxableOld < -200000 ? -200000 : letOutTaxableOld;
+            const letOutFinalNew = letOutTaxableNew < 0 ? 0 : letOutTaxableNew;
+
+            // Gross Total Income (excluding capital gains)
+            const grossIncomeOld = salaryIncome + selfOccupiedFinalOld + letOutFinalOld + businessIncome + otherIncome;
+            const grossIncomeNew = salaryIncome + selfOccupiedFinalNew + letOutFinalNew + businessIncome + otherIncome;
+
+            // Old Regime Calculation
+            const standardDeductionOld = 50000;
+            let taxableIncomeOld = grossIncomeOld - (salaryIncome > 0 ? standardDeductionOld : 0) - section80C - section80D - section80TT - section80CCD2;
+            if (taxableIncomeOld < 0) taxableIncomeOld = 0;
+
+            const oldRegimeSlabs = ageGroup === 'above80' ? [
+                { min: 0, max: 500000, rate: 0 },
+                { min: 500001, max: 1000000, rate: 0.20 },
+                { min: 1000001, max: Infinity, rate: 0.30 }
+            ] : ageGroup === '60to80' ? [
+                { min: 0, max: 300000, rate: 0 },
+                { min: 300001, max: 500000, rate: 0.05 },
+                { min: 500001, max: 1000000, rate: 0.20 },
+                { min: 1000001, max: Infinity, rate: 0.30 }
+            ] : [
+                { min: 0, max: 250000, rate: 0 },
+                { min: 250001, max: 500000, rate: 0.05 },
+                { min: 500001, max: 1000000, rate: 0.20 },
+                { min: 1000001, max: Infinity, rate: 0.30 }
+            ];
+
+            let taxOld = 0;
+            for (const slab of oldRegimeSlabs) {
+                if (taxableIncomeOld > slab.min) {
+                    const taxableInSlab = Math.min(taxableIncomeOld, slab.max) - slab.min;
+                    taxOld += taxableInSlab * slab.rate;
+                }
+            }
+
+            // Capital Gains Tax (Old Regime)
+            const isPostJuly23Equity = equitySaleDate && new Date(equitySaleDate) >= cutoffDate;
+            const equitySTCGTaxOld = equitySTCG * (isPostJuly23Equity ? 0.20 : 0.15); // 20% or 15% for STCG u/s 111A
+            const equityLTCGTaxOld = equityLTCG > (isPostJuly23Equity ? 125000 : 100000) ? (equityLTCG - (isPostJuly23Equity ? 125000 : 100000)) * (isPostJuly23Equity ? 0.125 : 0.10) : 0; // 12.5% or 10% for LTCG u/s 112A
+            let propertySTCGTaxOld = 0;
+            for (const slab of oldRegimeSlabs) {
+                if (propertySTCG > slab.min) {
+                    const taxableInSlab = Math.min(propertySTCG, slab.max) - slab.min;
+                    propertySTCGTaxOld += taxableInSlab * slab.rate;
+                }
+            }
+            const isPostJuly23Property = propertySaleDate && new Date(propertySaleDate) >= cutoffDate;
+            const propertyLTCGTaxOld = propertyLTCG * (isPostJuly23Property ? 0.125 : 0.20); // 12.5% or 20% for LTCG u/s 112
+            taxOld += equitySTCGTaxOld + equityLTCGTaxOld + propertySTCGTaxOld + propertyLTCGTaxOld;
+
+            // Rebate u/s 87A (Old Regime)
+            const totalIncomeOld = taxableIncomeOld + equitySTCG + equityLTCG + propertySTCG + propertyLTCG;
+            if (totalIncomeOld <= 500000) {
+                taxOld = Math.max(0, taxOld - 12500);
+            }
+
+            // Surcharge (Old Regime)
+            let surchargeOld = 0;
+            const specialIncomeTaxOld = equitySTCGTaxOld + equityLTCGTaxOld + propertyLTCGTaxOld + (otherIncome * (taxableIncomeOld > 0 ? (taxOld - equitySTCGTaxOld - equityLTCGTaxOld - propertySTCGTaxOld - propertyLTCGTaxOld) / taxableIncomeOld : 0)); // Approximate dividend tax
+            const normalIncomeTaxOld = taxOld - specialIncomeTaxOld;
+            if (totalIncomeOld > 50000000) {
+                surchargeOld = normalIncomeTaxOld * 0.37 + specialIncomeTaxOld * 0.15;
+            } else if (totalIncomeOld > 20000000) {
+                surchargeOld = normalIncomeTaxOld * 0.25 + specialIncomeTaxOld * 0.15;
+            } else if (totalIncomeOld > 10000000) {
+                surchargeOld = normalIncomeTaxOld * 0.15 + specialIncomeTaxOld * 0.15;
+            } else if (totalIncomeOld > 5000000) {
+                surchargeOld = taxOld * 0.10;
+            }
+
+            // Marginal Relief (Old Regime)
+            if (totalIncomeOld > 5000000) {
+                const taxAt50Lakh = calculateTaxAtThreshold(5000000, oldRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeOld, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeOld - 5000000;
+                const taxWithSurcharge = taxOld + surchargeOld;
+                if (taxWithSurcharge > taxAt50Lakh + excessIncome) {
+                    surchargeOld = taxAt50Lakh + excessIncome - taxOld;
+                }
+            }
+            if (totalIncomeOld > 10000000) {
+                const taxAt1Crore = calculateTaxAtThreshold(10000000, oldRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeOld, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeOld - 10000000;
+                const taxWithSurcharge = taxOld + surchargeOld;
+                if (taxWithSurcharge > taxAt1Crore + excessIncome) {
+                    surchargeOld = taxAt1Crore + excessIncome - taxOld;
+                }
+            }
+            if (totalIncomeOld > 20000000) {
+                const taxAt2Crore = calculateTaxAtThreshold(20000000, oldRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeOld, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeOld - 20000000;
+                const taxWithSurcharge = taxOld + surchargeOld;
+                if (taxWithSurcharge > taxAt2Crore + excessIncome) {
+                    surchargeOld = taxAt2Crore + excessIncome - taxOld;
+                }
+            }
+            if (totalIncomeOld > 50000000) {
+                const taxAt5Crore = calculateTaxAtThreshold(50000000, oldRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeOld, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeOld - 50000000;
+                const taxWithSurcharge = taxOld + surchargeOld;
+                if (taxWithSurcharge > taxAt5Crore + excessIncome) {
+                    surchargeOld = taxAt5Crore + excessIncome - taxOld;
+                }
+            }
+
+            // Cess (Old Regime)
+            const cessOld = (taxOld + surchargeOld) * 0.04;
+            const totalTaxOld = taxOld + surchargeOld + cessOld;
+
+            // New Regime Calculation
+            const standardDeductionNew = 75000;
+            let taxableIncomeNew = grossIncomeNew - (salaryIncome > 0 ? standardDeductionNew : 0) - section80CCD2;
+            if (taxableIncomeNew < 0) taxableIncomeNew = 0;
+
+            const newRegimeSlabs = [
+                { min: 0, max: 300000, rate: 0 },
+                { min: 300001, max: 700000, rate: 0.05 },
+                { min: 700001, max: 1000000, rate: 0.10 },
+                { min: 1000001, max: 1200000, rate: 0.15 },
+                { min: 1200001, max: 1500000, rate: 0.20 },
+                { min: 1500001, max: Infinity, rate: 0.30 }
+            ];
+
+            let taxNew = 0;
+            for (const slab of newRegimeSlabs) {
+                if (taxableIncomeNew > slab.min) {
+                    const taxableInSlab = Math.min(taxableIncomeNew, slab.max) - slab.min;
+                    taxNew += taxableInSlab * slab.rate;
+                }
+            }
+
+            // Capital Gains Tax (New Regime)
+            const equitySTCGTaxNew = equitySTCG * (isPostJuly23Equity ? 0.20 : 0.15); // 20% or 15% for STCG u/s 111A
+            const equityLTCGTaxNew = equityLTCG > (isPostJuly23Equity ? 125000 : 100000) ? (equityLTCG - (isPostJuly23Equity ? 125000 : 100000)) * (isPostJuly23Equity ? 0.125 : 0.10) : 0; // 12.5% or 10% for LTCG u/s 112A
+            let propertySTCGTaxNew = 0;
+            for (const slab of newRegimeSlabs) {
+                if (propertySTCG > slab.min) {
+                    const taxableInSlab = Math.min(propertySTCG, slab.max) - slab.min;
+                    propertySTCGTaxNew += taxableInSlab * slab.rate;
+                }
+            }
+            const propertyLTCGTaxNew = propertyLTCG * (isPostJuly23Property ? 0.125 : 0.20); // 12.5% or 20% for LTCG u/s 112
+            taxNew += equitySTCGTaxNew + equityLTCGTaxNew + propertySTCGTaxNew + propertyLTCGTaxNew;
+
+            // Rebate u/s 87A (New Regime)
+            const totalIncomeNew = taxableIncomeNew + equitySTCG + equityLTCG + propertySTCG + propertyLTCG;
+            if (totalIncomeNew <= 700000) {
+                taxNew = Math.max(0, taxNew - 25000);
+            }
+
+            // Surcharge (New Regime)
+            let surchargeNew = 0;
+            const specialIncomeTaxNew = equitySTCGTaxNew + equityLTCGTaxNew + propertyLTCGTaxNew + (otherIncome * (taxableIncomeNew > 0 ? (taxNew - equitySTCGTaxNew - equityLTCGTaxNew - propertySTCGTaxNew - propertyLTCGTaxNew) / taxableIncomeNew : 0)); // Approximate dividend tax
+            const normalIncomeTaxNew = taxNew - specialIncomeTaxNew;
+            if (totalIncomeNew > 20000000) {
+                surchargeNew = normalIncomeTaxNew * 0.25 + specialIncomeTaxNew * 0.15;
+            } else if (totalIncomeNew > 10000000) {
+                surchargeNew = normalIncomeTaxNew * 0.15 + specialIncomeTaxNew * 0.15;
+            } else if (totalIncomeNew > 5000000) {
+                surchargeNew = taxNew * 0.10;
+            }
+
+            // Marginal Relief (New Regime)
+            if (totalIncomeNew > 5000000) {
+                const taxAt50Lakh = calculateTaxAtThreshold(5000000, newRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeNew, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeNew - 5000000;
+                const taxWithSurcharge = taxNew + surchargeNew;
+                if (taxWithSurcharge > taxAt50Lakh + excessIncome) {
+                    surchargeNew = taxAt50Lakh + excessIncome - taxNew;
+                }
+            }
+            if (totalIncomeNew > 10000000) {
+                const taxAt1Crore = calculateTaxAtThreshold(10000000, newRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeNew, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeNew - 10000000;
+                const taxWithSurcharge = taxNew + surchargeNew;
+                if (taxWithSurcharge > taxAt1Crore + excessIncome) {
+                    surchargeNew = taxAt1Crore + excessIncome - taxNew;
+                }
+            }
+            if (totalIncomeNew > 20000000) {
+                const taxAt2Crore = calculateTaxAtThreshold(20000000, newRegimeSlabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncomeNew, isPostJuly23Equity, isPostJuly23Property);
+                const excessIncome = totalIncomeNew - 20000000;
+                const taxWithSurcharge = taxNew + surchargeNew;
+                if (taxWithSurcharge > taxAt2Crore + excessIncome) {
+                    surchargeNew = taxAt2Crore + excessIncome - taxNew;
+                }
+            }
+
+            // Cess (New Regime)
+            const cessNew = (taxNew + surchargeNew) * 0.04;
+            const totalTaxNew = taxNew + surchargeNew + cessNew;
+
+            // Helper function to calculate tax at threshold for marginal relief
+            function calculateTaxAtThreshold(threshold, slabs, equitySTCG, equityLTCG, propertySTCG, propertyLTCG, otherIncome, taxableIncome, isPostJuly23Equity, isPostJuly23Property) {
+                let tax = 0;
+                const taxableIncomeAtThreshold = Math.min(threshold - equitySTCG - equityLTCG - propertySTCG - propertyLTCG, taxableIncome);
+                for (const slab of slabs) {
+                    if (taxableIncomeAtThreshold > slab.min) {
+                        const taxableInSlab = Math.min(taxableIncomeAtThreshold, slab.max) - slab.min;
+                        tax += taxableInSlab * slab.rate;
+                    }
+                }
+                tax += equitySTCG * (isPostJuly23Equity ? 0.20 : 0.15);
+                tax += equityLTCG > (isPostJuly23Equity ? 125000 : 100000) ? (equityLTCG - (isPostJuly23Equity ? 125000 : 100000)) * (isPostJuly23Equity ? 0.125 : 0.10) : 0;
+                for (const slab of slabs) {
+                    if (propertySTCG > slab.min) {
+                        const taxableInSlab = Math.min(propertySTCG, slab.max) - slab.min;
+                        tax += taxableInSlab * slab.rate;
+                    }
+                }
+                tax += propertyLTCG * (isPostJuly23Property ? 0.125 : 0.20);
+                return tax;
+            }
+
+            // Display Results
+            document.getElementById('oldRegime').innerHTML = `
+                <h3 class="text-md font-semibold">Old Regime</h3>
+                <p>Taxable Income (excl. Capital Gains): ₹${taxableIncomeOld.toFixed(2)}</p>
+                <p>Tax on Income: ₹${taxOld.toFixed(2)}</p>
+                <p>Surcharge: ₹${surchargeOld.toFixed(2)}</p>
+                <p>Health & Education Cess (4%): ₹${cessOld.toFixed(2)}</p>
+                <p><strong>Total Tax: ₹${totalTaxOld.toFixed(2)}</strong></p>
+            `;
+            document.getElementById('newRegime').innerHTML = `
+                <h3 class="text-md font-semibold">New Regime</h3>
+                <p>Taxable Income (excl. Capital Gains): ₹${taxableIncomeNew.toFixed(2)}</p>
+                <p>Tax on Income: ₹${taxNew.toFixed(2)}</p>
+                <p>Surcharge: ₹${surchargeNew.toFixed(2)}</p>
+                <p>Health & Education Cess (4%): ₹${cessNew.toFixed(2)}</p>
+                <p><strong>Total Tax: ₹${totalTaxNew.toFixed(2)}</strong></p>
+            `;
+            document.getElementById('recommendation').textContent = totalTaxOld < totalTaxNew 
+                ? 'Old Regime is more beneficial, saving ₹' + (totalTaxNew - totalTaxOld).toFixed(2)
+                : 'New Regime is more beneficial, saving ₹' + (totalTaxOld - totalTaxNew).toFixed(2);
+            resultDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
